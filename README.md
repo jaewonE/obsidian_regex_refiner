@@ -1,90 +1,164 @@
-# Obsidian Sample Plugin
+# Obsidian Regex Refiner
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+[ [English](https://github.com/jaewonE/obsidian_regex_refiner) | [한국어](https://github.com/jaewonE/obsidian_regex_refiner/blob/master/README.ko.md) ]
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+![Obsidian Regex Refiner demo](assets/demo.gif)
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+Obsidian Regex Refiner is an Obsidian community plugin for applying reusable text-refactoring pipelines to the active Markdown note.
 
-## First time developing plugins?
+Each pipeline is stored as a DAG and contains ordered steps. A step can run either a global regular expression replacement or a global literal text replacement. The plugin is designed for repeatable note cleanup, format conversion, and Markdown-safe refactoring without sending vault data outside Obsidian.
 
-Quick starting guide for new plugin devs:
+## Purpose
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+Regex Refiner gives you a command-driven way to run known text transformations without rebuilding the same find-and-replace sequence each time.
 
-## Releasing new releases
+Typical uses include:
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+- Convert recurring markup patterns into another syntax.
+- Normalize spacing, line endings, or heading gaps.
+- Clean imported Markdown while preserving protected regions.
+- Keep several named transformation pipelines and run the right one from a picker.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+## Features
 
-## Adding your plugin to the community plugin list
+- Create, edit, expand, collapse, and delete multiple DAG pipelines from plugin settings.
+- Remove DAGs or steps through trash buttons with confirmation before deletion.
+- Add ordered `Regex` or `Replace` steps to each DAG.
+- Run a DAG from the command palette or an assigned hotkey.
+- Select the DAG to run with keyboard arrows, `Enter`, mouse hover, or click.
+- Show an empty-state message when no DAGs are configured.
+- Export DAG settings as JSON.
+- Import JSON and append imported DAGs without overwriting existing DAGs.
+- Stop safely when a regex is invalid, leaving the note unchanged.
+- Preserve protected Markdown regions:
+  - YAML frontmatter
+  - fenced code blocks
+  - inline code
+  - inline and block math
+  - Markdown table separators and alignment rows
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+## How DAG Processing Works
 
-## How to use
+A DAG is a named pipeline of steps. In version `1.0.0`, steps run from top to bottom in the order shown in settings.
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+For each step:
 
-## Manually installing the plugin
+- `Regex` compiles the **Find** field as a global JavaScript regular expression.
+- `Replace` treats the **Find** field as literal text and replaces all occurrences.
+- **Replace** is the replacement text for either step type.
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+If any step has an empty **Find** field or an invalid regex, the DAG does not modify the note.
 
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
+## Setting Up a DAG
 
-## Funding URL
+1. Open **Settings -> Community plugins -> Obsidian Regex Refiner**.
+2. Select **Add DAG**.
+3. Expand the new DAG row.
+4. Enter a clear **DAG name**. This is the name shown in the picker.
+5. Select **Add step** for each transformation you want to run.
+6. For each step, set:
+   - **Step name**: a short title for the transformation.
+   - **Step description**: a note explaining what the step does.
+   - **Step type**: `Regex` or `Replace`.
+   - **Find**: the regex pattern or literal text to search for.
+   - **Replace**: the replacement text.
+7. Keep steps ordered in the sequence you want them to run.
+8. Run **Apply regex refiner DAG** from the command palette, or assign it a hotkey in **Settings -> Hotkeys**.
 
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
+Example DAG:
 
 ```json
 {
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
+  "name": "Normalize spacing",
+  "steps": [
+    {
+      "name": "Collapse multiple spaces",
+      "description": "Convert consecutive spaces into a single space.",
+      "type": "Regex",
+      "find": " {2,}",
+      "replace": " "
     }
+  ]
 }
 ```
 
-## API Documentation
+## JSON Import and Export
 
-See https://docs.obsidian.md
+Use **Export JSON** to copy the current DAG settings.
+
+Use **Import JSON** to paste settings back into the plugin. Imported DAGs are appended to the existing list, and imported IDs are regenerated so they do not conflict.
+
+Accepted formats:
+
+```json
+{
+  "dags": [
+    {
+      "name": "My DAG",
+      "steps": [
+        {
+          "name": "Step 1",
+          "description": "Example",
+          "type": "Regex",
+          "find": "foo",
+          "replace": "bar"
+        }
+      ]
+    }
+  ]
+}
+```
+
+```json
+[
+  {
+    "name": "My DAG",
+    "steps": []
+  }
+]
+```
+
+## Manual Install
+
+Download the release assets and copy them to:
+
+```text
+<Vault>/.obsidian/plugins/obsidian_regex_refiner/
+```
+
+Required files:
+
+- `main.js`
+- `manifest.json`
+- `styles.css`
+
+Reload Obsidian and enable the plugin from **Settings -> Community plugins**.
+
+## Development
+
+Requirements:
+
+- Node.js 18+
+- npm
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run a development build:
+
+```bash
+npm run dev
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+## License
+
+Obsidian Regex Refiner is released under the GPL-3.0 license.

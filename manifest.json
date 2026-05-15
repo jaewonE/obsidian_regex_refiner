@@ -1,11 +1,9 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian_regex_refiner",
+	"name": "Obsidian Regex Refiner",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Apply configurable DAG pipelines of regex/literal refactoring steps to the active markdown note safely.",
+	"author": "jaewone",
 	"isDesktopOnly": false
 }

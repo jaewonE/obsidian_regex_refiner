@@ -1,0 +1,110 @@
+{
+    "dags": [
+        {
+            "id": "dag-5eabdbea-fa17-4459-bdb5-fbec1547dce5",
+            "name": "Replace ~~ for ANKI",
+            "steps": [
+                {
+                    "id": "step-7df8e355-34c4-4fda-980d-157771860b46",
+                    "name": "Replace ~~ for anki",
+                    "description": "Convert ~~...~~ patterns to Anki cloze syntax.",
+                    "type": "Regex",
+                    "find": "~~(.*?)~~",
+                    "replace": "{{c1::$1}} "
+                }
+            ]
+        },
+        {
+            "id": "dag-570e302b-3539-42d3-a580-62f2ea14901d",
+            "name": "Page Lint",
+            "steps": [
+                {
+                    "id": "step-2188f696-6072-4f37-952e-cd35717401d2",
+                    "name": "Normalize CRLF to LF",
+                    "description": "Normalize line endings by converting CRLF (\\r\\n) to LF (\\n).",
+                    "type": "Regex",
+                    "find": "\\r\\n",
+                    "replace": "\\n"
+                },
+                {
+                    "id": "step-6bb47f5e-2830-455e-ab08-4a434975ae6b",
+                    "name": "Convert LaTeX display math",
+                    "description": "Convert \\[...\\] display math to $$...$$ and trim surrounding inner whitespace.",
+                    "type": "Regex",
+                    "find": "\\\\\\[\\s*([\\s\\S]*?)\\s*\\\\\\]",
+                    "replace": "$$$$$1$$$$"
+                },
+                {
+                    "id": "step-1ae177a2-3010-4fb3-a2d4-a3164ed75d13",
+                    "name": "Convert LaTeX inline math",
+                    "description": "Convert \\(...\\) inline math to $...$ and trim surrounding inner whitespace.",
+                    "type": "Regex",
+                    "find": "\\\\\\(\\s*([\\s\\S]*?)\\s*\\\\\\)",
+                    "replace": "$$$1$$"
+                },
+                {
+                    "id": "step-c47cf54a-423e-447f-b4ac-a18a31b855d7",
+                    "name": "Ensure blank line before heading",
+                    "description": "Add one blank line before a heading (#{1,6}) when missing.",
+                    "type": "Regex",
+                    "find": "(\\S)\\n(\\s*#{1,6}\\s+)",
+                    "replace": "$1\\n\\n$2"
+                },
+                {
+                    "id": "step-1996883b-eca8-4a55-b80b-4c23adac46c2",
+                    "name": "Ensure blank line after heading",
+                    "description": "Add one blank line after a heading (#{1,6}) when missing.",
+                    "type": "Regex",
+                    "find": "(^|\\n)(\\s*#{1,6}\\s+.*)\\n(?!\\s*\\n)",
+                    "replace": "$1$2\\n\\n"
+                },
+                {
+                    "id": "step-aea9da07-1a7c-4a6f-9a0e-3e7d0c880928",
+                    "name": "Remove blank lines between list items",
+                    "description": "Remove unnecessary blank lines between adjacent list items.",
+                    "type": "Regex",
+                    "find": "((?:^|\\n)[ \\t]*(?:[-*+]|\\d+\\.)\\s+[^\\n]*)\\n(?:[ \\t]*\\n)+(?=[ \\t]*(?:[-*+]|\\d+\\.)\\s+)",
+                    "replace": "$1\\n"
+                },
+                {
+                    "id": "step-a23829a5-7651-41c8-9298-41c011515b4e",
+                    "name": "Add blank line between list and text",
+                    "description": "Add a blank line between a list item and following body text.",
+                    "type": "Regex",
+                    "find": "((?:^|\\n)[ \\t]*(?:[-*+]|\\d+\\.)\\s+[^\\n]*)\\n(?![ \\t]*\\n)(?![ \\t]*(?:[-*+]|\\d+\\.)\\s+)(?=[ \\t]*\\S)",
+                    "replace": "$1\\n\\n"
+                },
+                {
+                    "id": "step-e1d54cb5-e0e4-4247-b456-906e642f938d",
+                    "name": "Compress multiple blank lines",
+                    "description": "Compress runs of three or more line breaks to a single blank line.",
+                    "type": "Regex",
+                    "find": "\\n{3,}",
+                    "replace": "\\n\\n"
+                },
+                {
+                    "id": "step-e45b0140-152f-4960-a711-506f0e7656a3",
+                    "name": "Trim trailing whitespace",
+                    "description": "Trim spaces and tabs from the end of each line.",
+                    "type": "Regex",
+                    "find": "[ \\t]+(?=\\n|$)",
+                    "replace": ""
+                }
+            ]
+        },
+        {
+            "id": "dag-25644de9-845d-4687-9732-960a527d04dc",
+            "name": "Delete Anki cache",
+            "steps": [
+                {
+                    "id": "step-24d39abb-9cc2-4870-9397-36c76049df28",
+                    "name": "Remove chche pattern",
+                    "description": "Remove chche pattern",
+                    "type": "Regex",
+                    "find": "^[ \\t]*<!--ID:[\\s\\S]*?-->[ \\t]*\\r?\\n?",
+                    "replace": ""
+                }
+            ]
+        }
+    ]
+}

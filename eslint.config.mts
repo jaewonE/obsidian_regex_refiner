@@ -22,6 +22,19 @@ export default tseslint.config(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		plugins: {
+			obsidianmd,
+		},
+		rules: {
+			"obsidianmd/ui/sentence-case": ["error", {
+				enforceCamelCaseLower: true,
+				acronyms: ["DAG", "DAGs", "JSON"],
+				brands: ["Markdown", "Obsidian", "Obsidian Regex Refiner"],
+				ignoreWords: ["Find", "Regex", "Replace"],
+			}],
+		},
+	},
 	globalIgnores([
 		"node_modules",
 		"dist",
